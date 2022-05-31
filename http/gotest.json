@@ -1,0 +1,10 @@
+{
+    "transId": "baidu",
+    "url":"http://www.baidu.com",
+    "method": "GET",
+    "params": {"name": "李小龙", "age": 33},
+    "body": "hello",
+    "headers": {
+        "Content-Type": "application/json;charset=utf8"
+    }
+}

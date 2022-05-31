@@ -1,0 +1,29 @@
+package model
+
+import "time"
+
+type Transaction struct {
+	Name      		string
+	ExecStartTime 	time.Time
+	ExecEndTime 	time.Time
+	RTT				int64	// average of response time
+	Status 			bool			// transaction status
+
+	HttpRequest 	*HttpRequest
+}
+
+type Report struct {
+
+	Period			time.Duration
+
+	Transactions	[]*Transaction
+	Total			int
+	SuccessCount 	int
+	FailedCount		int
+	
+	AvgRTT			float64
+	TP50			int64
+	TP90			int64
+	TP99			int64
+	
+}
