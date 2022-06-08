@@ -17,7 +17,8 @@ type Stat struct {
 }
 var tickerStopFlag bool
 var StatIns *Stat
-var reportMutex sync.Mutex
+var transChanMutex sync.Mutex
+var transMutex sync.Mutex
 
 func init() {
 	StatIns = New()
@@ -31,21 +32,6 @@ func New() *Stat {
 		transactionChan:    make(chan *model.Transaction, 2048),
 		transactions:       make([]*model.Transaction, 0, 1024),
 		reportChan: 		make(chan *model.Report, 512),
-	}
-}
-
-func (stat *Stat) Report(transaction *model.Transaction) {
-	log.Info("Report one piece of transaction result.")
-	stat.transactionChan <- transaction
-}
-
-func (stat *Stat) transfer() {
-	for v := range stat.transactionChan {
-		//log.Info("Transfer transaction to stat.transactions from stat.transactionChan.")
-		reportMutex.Lock()
-		stat.transactions = append(stat.transactions, v)
-		log.Infof("stat.transactions length: %d", len(stat.transactions))
-		reportMutex.Unlock()
 	}
 }
 
@@ -80,18 +66,36 @@ func (stat *Stat) Stop() {
 	log.Infoln("Stats is stopped")
 }
 
+func (stat *Stat) Report(transaction *model.Transaction) {
+	transChanMutex.Lock()
+	defer transChanMutex.Unlock()
+	log.Info("Report one piece of transaction result.")
+	transaction.LogTime = time.Now().Unix()
+	stat.transactionChan <- transaction
+}
+
+func (stat *Stat) transfer() {
+	for v := range stat.transactionChan {
+		//log.Info("Transfer transaction to stat.transactions from stat.transactionChan.")
+		transMutex.Lock()
+		stat.transactions = append(stat.transactions, v)
+		log.Infof("stat.transactions length: %d", len(stat.transactions))
+		transMutex.Unlock()
+	}
+}
+
 func (stat *Stat) aggregate() {
-	reportMutex.Lock()
+	transMutex.Lock()
 	transSum := len(stat.transactions)
 	tempTrans := stat.transactions[:transSum]
 	stat.transactions = stat.transactions[transSum:]
-	reportMutex.Unlock()
+	transMutex.Unlock()
 
 	successCount, failedCount, totalTimeSpent := statusStats(tempTrans)
 	tp50, tp90, tp99 := tpStats(tempTrans)
 	avgRtt, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", float64(totalTimeSpent)/float64(transSum)), 64)
 	report := &model.Report{
-		Period:       tempTrans[transSum-1].ExecEndTime.Sub(tempTrans[0].ExecStartTime),
+		Period:       tempTrans[transSum-1].LogTime - tempTrans[0].LogTime,
 		Total:        transSum,
 		SuccessCount: successCount,
 		FailedCount:  failedCount,

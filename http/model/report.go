@@ -9,12 +9,14 @@ type Transaction struct {
 	RTT				int64	// average of response time
 	Status 			bool			// transaction status
 
+	LogTime			int64 // time when this transaction record generated
+
 	HttpRequest 	*HttpRequest
 }
 
 type Report struct {
 
-	Period			time.Duration
+	Period			int64
 
 	Transactions	[]*Transaction
 	Total			int
