@@ -21,10 +21,10 @@ var transChanMutex sync.Mutex
 var transMutex sync.Mutex
 
 func init() {
-	StatIns = New()
+	StatIns = new()
 }
 
-func New() *Stat {
+func new() *Stat {
 	if StatIns != nil {
 		return StatIns
 	}
@@ -69,6 +69,14 @@ func (stat *Stat) Stop() {
 func (stat *Stat) Report(transaction *model.Transaction) {
 	transChanMutex.Lock()
 	defer transChanMutex.Unlock()
+
+	// log rtt to buffer for aggregate perf index in the whole time
+	if transaction.Status {
+		perfIndexBuffer.Success(uint32(transaction.RTT), 1)
+	} else {
+		perfIndexBuffer.Fail(uint32(transaction.RTT))
+	}
+
 	log.Info("Report one piece of transaction result.")
 	transaction.LogTime = time.Now().Unix()
 	stat.transactionChan <- transaction

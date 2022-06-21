@@ -29,6 +29,8 @@ func (reporter *Reporter) output(reportChan chan *model.Report) {
 }
 
 func (reporter *Reporter) release() {
+	reporter.printSummary()
+	
 	log.Infof("Close write report to file: %s", reporter.ReportFile.Name())
 	reporter.ReportFile.Close()
 	reporter.FinishSignal <- struct{}{}
@@ -39,4 +41,11 @@ func (reporter *Reporter) Await() {
 	log.Infof("Wait reporter output finish.")
 	<-reporter.FinishSignal
 	log.Infof("Reporter output finish.")
+}
+
+func (reporter *Reporter) printSummary() {
+	log.Infof("^_^^_^^_^Performance Test Statistics^_^^_^^_^:")
+	perfIndex := perfIndexBuffer.Aggregate()
+
+	log.Infof(utils.ToJSON(perfIndex))
 }
