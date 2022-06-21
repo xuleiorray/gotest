@@ -22,7 +22,7 @@ type PerfIndex struct {
 var length uint32 = 256
 var exponent uint8 = 8
 var capacity uint32 = length * length
-var maxIndex uint32 = capacity - 1
+var maxIndex uint32 = length - 1
 
 var perfIndexBuffer = &PerfIndexBuffer {
 }
