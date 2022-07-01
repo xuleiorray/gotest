@@ -24,7 +24,9 @@ func (testTask *PerfTestTask) DoTask() {
 		HttpRequest: testTask.HttpRequest,
 	}
 	httpResp := axiosClient.Dispatch(httpReq)
-	log.Infof("% 4s %s %d", httpReq.Method, httpReq.Url, httpResp.StatusCode)
+	if httpResp != nil {
+		log.Infof("% 4s %s %d", httpReq.Method, httpReq.Url, httpResp.StatusCode)
+	}
 
 	transaction.ExecEndTime = time.Now()
 	transaction.RTT = transaction.ExecEndTime.Sub(transaction.ExecStartTime).Milliseconds()

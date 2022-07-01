@@ -3,7 +3,6 @@ package task
 import (
 	"net/http"
 	"perftest/http/model"
-	"strings"
 	"time"
 
 	"github.com/vicanso/go-axios"
@@ -29,7 +28,7 @@ func init() {
                 Proxy: http.ProxyFromEnvironment,
             },
         },
-        Timeout: 10 * time.Second,
+        Timeout: time.Minute,
         OnDone: func(config *axios.Config, resp *axios.Response, err error) {
             if err != nil {
                 log.Info(err)
@@ -40,21 +39,12 @@ func init() {
 }
 
 func (client *AxiosClient) Dispatch(request *model.HttpRequest) *model.HttpResponse {
-    var resp *axios.Response
-    var err error
-    if strings.ToUpper(request.Method) == "GET" {
-        resp, err = client.axiosIns.Get(request.Url, queryString(request))
-    } else if strings.ToUpper(request.Method) == "POST" {
-        resp, err = client.axiosIns.Post(request.Url, request.Body, queryString(request))
-    } else {
-        log.Errorln("Unsupported http request method, just support GET and POST method")
-        return nil
-    }
+
+    resp, err := client.axiosIns.Request(buildRequestConfig(request))
     if err != nil {
         log.Infof("Get request execute failed with error: %s", err.Error())
         return nil
     }
-
     httpResponse := &model.HttpResponse {
         HttpRequest: *request,
         StatusCode: resp.Status,
@@ -64,10 +54,19 @@ func (client *AxiosClient) Dispatch(request *model.HttpRequest) *model.HttpRespo
     return httpResponse
 }
 
+func buildRequestConfig(request *model.HttpRequest) *axios.Config {
+    return &axios.Config{
+        URL: request.Url,
+        Method: request.Method,
+        Body: request.Body,
+        Query: toMapArray(request.Params),
+        Headers: toMapArray(request.Headers),
+    }
+}
 
-func queryString(request *model.HttpRequest) map[string][]string {
+func toMapArray(maps map[string]string) map[string][]string {
     mapParams := make(map[string][]string)
-    for k, v := range request.Params {
+    for k, v := range maps {
         mapParams[k] = []string{v}
     }
     return mapParams
