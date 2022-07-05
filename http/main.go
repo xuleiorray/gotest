@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"perftest/http/config"
 	"perftest/http/console"
 	"perftest/http/constants"
 	"perftest/http/logger"
@@ -60,6 +61,13 @@ func main() {
 	console.Context.Duration = duration 
 	console.Context.WorkerCount = workerCount
 	console.Context.TestType = testType
+
+	// load test runtime config from gotest.ini
+	config.INSTANCE = &config.GoTestConfig {
+		ConfigPath: "./gotest.ini",
+	}
+
+	// load test case data from gotest.json
 	httpRequest, err := model.FromJsonFile("./gotest.json")
 	if err != nil {
 		log.Fatalf("Failed to read json file, %w", err)
@@ -68,7 +76,7 @@ func main() {
 		HttpRequest: httpRequest,
 	}
 
-	// report file
+	// specify the test report file
 	reportFile, err := os.OpenFile(reportPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModeAppend|os.ModePerm)
 	if err != nil {
 		log.Fatalf("open report file error, %s", err.Error())

@@ -9,16 +9,19 @@ import (
 	"strings"
 )
 
+const (
+	HTTP_REQUEST_CONFIG_PREFIX = "http.request"
+	HTTP_REQUEST_SLOW_THRESHOLD = "http.request.slow.threshold"
+)
 var (
 	log = logger.LOGGER
 	ErrConfigPropertyNotExist = errors.New("config property not found")
-
-	HTTP_REQUEST_CONFIG_PREFIX = "http.request"
+	INSTANCE *GoTestConfig
 )
 
 type (
 	GoTestConfig struct {
-		configPath        string
+		ConfigPath        string
 		data map[string]interface{}
 		httpRequestConfig map[string]interface{}
 	}
@@ -27,9 +30,10 @@ type (
 )
 
 func NewConfig(configPath string) (conf *GoTestConfig) {
-	conf = &GoTestConfig{
-		configPath: configPath,
+	conf = &GoTestConfig {
+		ConfigPath: configPath,
 	}
+	INSTANCE = conf
 	configFile, err := os.Open(configPath)
 	if err != nil {
 		log.Fatalf("open local config file error, %s", err.Error())
@@ -37,6 +41,10 @@ func NewConfig(configPath string) (conf *GoTestConfig) {
 	}
 	bufReader := bufio.NewReader(configFile)
 	for line, _, err := bufReader.ReadLine(); err != io.EOF; {
+		if !strings.Contains(string(line), "=") {
+			continue
+		}
+
 		kv := strings.Split(string(line), "=")
 		k := strings.TrimSpace(kv[0])
 		v := strings.TrimSpace(kv[1])

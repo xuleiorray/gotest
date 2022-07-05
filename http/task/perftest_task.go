@@ -5,6 +5,7 @@ import (
 	"perftest/http/model"
 	"perftest/http/stats"
 	"perftest/http/utils"
+	"perftest/http/client"
 	"time"
 )
 
@@ -23,7 +24,7 @@ func (testTask *PerfTestTask) DoTask() {
 		ExecStartTime: time.Now(),
 		HttpRequest: testTask.HttpRequest,
 	}
-	httpResp := axiosClient.Dispatch(httpReq)
+	httpResp := client.HttpClient.Dispatch(httpReq)
 	if httpResp != nil {
 		log.Infof("% 4s %s %d", httpReq.Method, httpReq.Url, httpResp.StatusCode)
 	}

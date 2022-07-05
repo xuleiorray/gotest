@@ -1,7 +1,9 @@
-package task
+package client
 
 import (
 	"net/http"
+	"perftest/http/config"
+	"perftest/http/logger"
 	"perftest/http/model"
 	"time"
 
@@ -12,7 +14,8 @@ type AxiosClient struct {
     axiosIns *axios.Instance
 }
 
-var axiosClient *AxiosClient
+var log = logger.LOGGER
+var HttpClient *AxiosClient
 
 func New(axiosIns *axios.Instance) *AxiosClient {
     return &AxiosClient{
@@ -35,12 +38,19 @@ func init() {
             }
         },
     })
-    axiosClient = New(axiosIns)
+    HttpClient = New(axiosIns)
 }
 
 func (client *AxiosClient) Dispatch(request *model.HttpRequest) *model.HttpResponse {
 
+    slowTime := config.INSTANCE.GetInt(config.HTTP_REQUEST_SLOW_THRESHOLD)
+    timeStart := time.Now()
     resp, err := client.axiosIns.Request(buildRequestConfig(request))
+    duration := time.Since(timeStart).Milliseconds()
+    
+    if duration >= int64(slowTime) {
+        log.Infof("Slow request execute takes %dms", duration)
+    }
     if err != nil {
         log.Infof("Get request execute failed with error: %s", err.Error())
         return nil
