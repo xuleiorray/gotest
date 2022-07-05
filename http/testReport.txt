@@ -147,3 +147,11 @@
 {"Period":0,"Transactions":null,"Total":10,"SuccessCount":10,"FailedCount":0,"AvgRTT":214.9,"TP50":229,"TP90":280,"TP99":280}
 {"Period":1,"Transactions":null,"Total":8,"SuccessCount":8,"FailedCount":0,"AvgRTT":226.5,"TP50":234,"TP90":246,"TP99":246}
 {"Period":0,"Transactions":null,"Total":2,"SuccessCount":2,"FailedCount":0,"AvgRTT":181,"TP50":193,"TP90":193,"TP99":193}
+{"Period":0,"Transactions":null,"Total":2,"SuccessCount":2,"FailedCount":0,"AvgRTT":957,"TP50":960,"TP90":960,"TP99":960}
+{"Period":0,"Transactions":null,"Total":8,"SuccessCount":8,"FailedCount":0,"AvgRTT":225.75,"TP50":229,"TP90":266,"TP99":266}
+{"Period":0,"Transactions":null,"Total":10,"SuccessCount":10,"FailedCount":0,"AvgRTT":219.3,"TP50":223,"TP90":240,"TP99":240}
+{"Period":0,"Transactions":null,"Total":9,"SuccessCount":9,"FailedCount":0,"AvgRTT":221.56,"TP50":224,"TP90":293,"TP99":293}
+{"Period":0,"Transactions":null,"Total":9,"SuccessCount":9,"FailedCount":0,"AvgRTT":215.44,"TP50":212,"TP90":266,"TP99":266}
+{"Period":1,"Transactions":null,"Total":2,"SuccessCount":2,"FailedCount":0,"AvgRTT":189.5,"TP50":193,"TP90":193,"TP99":193}
+{"Period":0,"Transactions":null,"Total":4,"SuccessCount":4,"FailedCount":0,"AvgRTT":270.75,"TP50":292,"TP90":311,"TP99":311}
+{"Period":-1,"Transactions":null,"Total":6,"SuccessCount":6,"FailedCount":0,"AvgRTT":337.67,"TP50":265,"TP90":583,"TP99":583}
